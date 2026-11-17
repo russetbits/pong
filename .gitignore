@@ -1,0 +1,12 @@
+/target/
+target/
+# 本地编译配置含内网路径，不入库（占位模板 config.toml.example 入库）
+.cargo/config.toml
+*.png.tmp
+big.bin
+gui_snapshot*.png
+.tmp-*
+*.tmp
+__pycache__/
+*.pyc
+Cargo.lock.orig

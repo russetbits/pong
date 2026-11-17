@@ -1,0 +1,23 @@
+# pong Linux daemon systemd user unit（Linux 被控机以 client 身份常驻连接 host）
+# 本程序只做 client，host 只需有 sshd（agent 无法直接 ssh 到 client 的场景才需要本程序）
+# 安装（user 级，无需 sudo）：
+#   mkdir -p ~/.config/systemd/user
+#   cp tools/pong.service ~/.config/systemd/user/pong.service
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now pong
+# 配置：temp 目录 config.ini（默认 /tmp/pong/config.ini；PONG_DIR 环境变量可指定工作目录，缺省 temp/pong）
+[Unit]
+Description=pong bridge daemon (ssh reverse tunnel + local bridge)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=PONG_DIR=%h/.local/share/pong
+ExecStart=%h/.local/bin/pong --daemon-run
+Restart=on-failure
+RestartSec=5
+# user 级无需系统加固项（无特权； lingering 可选：loginctl enable-linger $USER 使开机自启）
+
+[Install]
+WantedBy=default.target

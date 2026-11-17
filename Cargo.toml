@@ -1,0 +1,43 @@
+[package]
+name = "pong"
+version = "0.1.0"
+edition = "2021"
+description = "pong: reverse of ping - a managed host reaches back and executes commands (exec/adb/serial/file ops) for a remote agent over an ssh reverse tunnel"
+license = "MIT OR Apache-2.0"
+
+[lib]
+name = "pong"
+path = "src/lib.rs"
+
+[dependencies]
+serde_json = { version = "1", default-features = false, features = ["std"] }
+hmac = "0.12"
+sha2 = "0.10"
+russh = { version = "0.65", default-features = false, features = ["ring"] }
+tokio = { version = "1", features = ["rt-multi-thread", "net", "io-util", "time", "sync"] }
+eframe = { version = "0.33", default-features = false, features = ["glow", "wayland", "x11"], optional = true }
+winit = { version = "0.30", optional = true }
+
+[features]
+default = []
+gui = ["dep:eframe", "dep:winit"]
+cli = []
+
+[profile.release]
+strip = true
+lto = true
+
+[dev-dependencies]
+egui = "0.33"
+egui_kittest = { version = "0.33", features = ["eframe", "snapshot"] }
+
+# 双可执行：pong-gui（托盘 UI，无参=GUI）与 pong（CLI，无参=ssh 式报错）
+[[bin]]
+name = "pong-gui"
+path = "src/main.rs"
+required-features = ["gui"]
+
+[[bin]]
+name = "pong"
+path = "src/bin/pong.rs"
+required-features = ["cli"]
